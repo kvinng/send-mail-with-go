@@ -1,0 +1,13 @@
+smtp_server:
+    server: smtp.server.foo
+    port: 587
+    username: userSMTP
+    password: passwordSMTP
+mail:
+    from_name: MailFrom
+    from: sender@mail.foo
+    to:
+        - receiver@mail.foo
+        - receiver2@mail.foo
+    subject: Email from Golang
+    body: This is sending an email with a program made with Go❤️
