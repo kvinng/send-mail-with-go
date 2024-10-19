@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
@@ -34,9 +35,7 @@ type SMTPServer struct {
 
 // Receive STMPServer & Email struct and return error if unable send email
 func SendMail(server SMTPServer, mail Email) error {
-
 	auth := smtp.PlainAuth("", server.Username, server.Password, server.Server)
-
 	message := formatMessageBody(mail)
 
 	err := smtp.SendMail(server.Server+":"+strconv.Itoa(server.Port), auth, mail.From, mail.To, []byte(message))
@@ -48,11 +47,18 @@ func SendMail(server SMTPServer, mail Email) error {
 }
 
 func formatMessageBody(mail Email) string {
-	return fmt.Sprintf("From: " + mail.FromName + "<" + mail.From + ">\r\n" +
-		"To: " + strings.Join(mail.To, ",") + "\r\n" +
-		"Subject: " + mail.Subject + "\r\n" +
-		"\r\n" +
-		mail.Body)
+	return fmt.Sprintf(
+		"From: %s <%s>\r\n"+
+			"To: %s\r\n"+
+			"Subject: %s\r\n"+
+			"Message-ID: %s\r\n"+
+			"Date: %s\r\n"+
+			"\r\n%s",
+		mail.FromName, mail.From, strings.Join(mail.To, ","), mail.Subject, createMessageID(mail.From), time.Now().Format(time.RFC1123Z), mail.Body)
+}
+
+func createMessageID(from string) string {
+	return fmt.Sprintf("<%d.%d@%s>", time.Now().UnixNano(), time.Now().Unix(), from)
 }
 
 func InitConfig() error {

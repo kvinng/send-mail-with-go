@@ -4,6 +4,7 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
 	"log"
 	email "send-mail-with-go/pkg"
 
@@ -26,6 +27,10 @@ var modifyCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("Error al leer la configuración: %v", err)
 		}
+		if err := email.SendMail(smtpConfig, mailConfig); err != nil {
+			fmt.Printf("errior %s", err)
+		}
+
 	},
 }
 
